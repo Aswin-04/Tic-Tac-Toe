@@ -1,22 +1,27 @@
-function createCell() {
+function createCell(index) {
 
     let value = ""
+
+    const getValue = () => value
+    const getIndex = () => index
 
     const changeValue = (givenValue) => {
         value = givenValue
     }
 
-    const getValue = () => value
-
     return {
         changeValue, 
         getValue,
+        getIndex,
     }
 }
 
 function createPlayer(value) {
 
     let name
+    let hasWon = false
+    let isTie = false
+    const getName = () => name
 
     if(value === "X") {
         name = prompt("Enter Player1's Name") || "Luffy"
@@ -26,12 +31,13 @@ function createPlayer(value) {
         name = prompt("Enter Player2's Name") || "Zoro"
     }
     
-    const getName = () => name
     const getAssignedValue = () => value
 
     return {
         getName,
         getAssignedValue,
+        hasWon,
+        isTie,
     }
 }
 
@@ -42,18 +48,13 @@ function gameBoard() {
     const board = []
 
     for(let i = 0; i < ROW*COLUMN; i++) {
-        board.push(createCell())
+        board.push(createCell(i))
     }
     
     const getBoard = () => board
 
-    const printBoard = () => {
-        board.forEach((cell) => console.log(cell.getValue()))
-    }
-
     const setValue = (index, player) => {
         if(board[index].getValue() != "") {
-            console.log("This place is already taken, please try somewhere else")
             return false
         }
         board[index].changeValue(player.getAssignedValue())
@@ -62,12 +63,11 @@ function gameBoard() {
     
     return {
         getBoard,
-        printBoard,
         setValue,
     }
 }
 
-const gameController = (() => {
+function gameController() {
     
     const game = gameBoard()
     const playerArray = []
@@ -90,6 +90,8 @@ const gameController = (() => {
     
     let activePlayer = player1
 
+    const getActivePlayer = () => activePlayer
+
     const switchPlayerTurn = () => {
         activePlayer = player1 === activePlayer ? player2 : player1
     }
@@ -100,7 +102,7 @@ const gameController = (() => {
             const checkArray = combo.map((index) => board[index].getValue())
             
             if(checkArray.every(val => val === "X") || checkArray.every(val => val === "O")) {
-                console.log(`${activePlayer.getName()} has won the game!!!`)
+                activePlayer.hasWon = true
                 return true
             }
         }
@@ -111,29 +113,81 @@ const gameController = (() => {
         for(let cell of board) {
             if(cell.getValue() === "") return false
         }
-        console.log("Oops....   It's a Tie")
+        activePlayer.isTie = true
         return true
     }
 
-    const printNewRound = () => {
-        console.log(`${activePlayer.getName()}'s turn!`)
+    const reset = () => {
+        board.forEach((cell) => cell.changeValue(""))
+        activePlayer.hasWon = false
+        activePlayer.isTie = false
+        activePlayer = player1
     }
-
     const playRound = (index) => {
 
         if(!game.setValue(index, activePlayer)) return
-        game.printBoard()
-        if(checkForWin() || checkForTie()) {
-            board.forEach((cell) => cell.changeValue(""))
-        }
+        if(checkForWin() || checkForTie()) return
         switchPlayerTurn()
-        printNewRound()
     }
-
-    printNewRound()
 
     return {
         playRound,
+        getActivePlayer,
+        getBoard : game.getBoard,
+        reset,
     }
+}
+
+const screenController = (() =>  {
+    const game = gameController()
+    const board = game.getBoard()
     
+    const boardDiv = document.querySelector(".board")
+    const playerTurnDiv = document.querySelector(".turn")
+    const result = document.querySelector(".result")
+    const playAgainBtn = document.querySelector(".reset")
+    
+    const updateScreen = () => {
+        
+        boardDiv.textContent = ""
+        result.textContent = ""
+        
+        board.forEach((cell) => {
+            const buttonCell = document.createElement("button")
+            
+            buttonCell.textContent = cell.getValue()
+            buttonCell.classList.add("cell")
+            buttonCell.dataset.index = cell.getIndex()
+            
+            boardDiv.appendChild(buttonCell)
+        })
+        
+        const activePlayer = game.getActivePlayer()
+        playerTurnDiv.textContent = `${activePlayer.getName()}'s turn...`
+        if(activePlayer.hasWon) {
+            result.textContent = `${activePlayer.getName()} has won the game`
+        }
+
+        else if(activePlayer.isTie) {
+            result.textContent = "Oops It's a Tie....."
+        }
+    }
+
+    const clickHandlerForBoard = (e) => {
+
+        const selectedButton = e.target
+        const index = parseInt(selectedButton.dataset.index)
+        selectedButton.textContent = `${board[index].getValue()}`
+        game.playRound(index)
+        updateScreen()
+    }
+
+    boardDiv.addEventListener("click", clickHandlerForBoard)
+    updateScreen()
+
+    playAgainBtn.addEventListener("click", () => {
+        game.reset()
+        updateScreen()
+    })
 })()
+
