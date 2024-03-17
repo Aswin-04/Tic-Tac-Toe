@@ -1,0 +1,19 @@
+@use '../util' as u;
+
+.logo {
+    width: 2rem;
+    height: 2rem;
+}
+
+.x-img, .o-img {
+    width: 2.5rem;
+    height: 2.5rem;
+    filter: invert(79%) sepia(5%) saturate(837%) hue-rotate(154deg) brightness(97%) contrast(85%); 
+}
+
+.checked-icon {
+    background-color: u.$grey;
+    img {
+        filter: invert(10%) sepia(9%) saturate(3479%) hue-rotate(154deg) brightness(84%) contrast(83%);
+    }
+}

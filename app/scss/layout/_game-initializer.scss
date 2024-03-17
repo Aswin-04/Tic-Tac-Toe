@@ -1,0 +1,83 @@
+@use '../util' as u;
+
+.init-section {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-initializer {
+    width: 90%;
+    min-height: 50%;
+
+    display: grid;
+    grid-template-rows: 1fr 4fr 1fr;
+    gap: 2.5rem;
+
+    &__logo {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: .4rem;
+    }
+
+    &__player-picker {
+        min-height: 80%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+
+        background-color: u.$secondary;
+        border-radius: .8rem;
+        box-shadow: rgba(0, 0, 0, 0.5) 0px 10px 10px 0px;
+
+        &__header {
+            letter-spacing: u.$letterSpacing;
+        } 
+
+        &__input {
+            width: 80%;
+            min-height: 40%;
+            padding: .5rem;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            background-color: u.$primary;
+            border-radius: 1rem;
+
+            &__x-icon, &__o-icon  {
+                display: grid;
+                place-items: center;
+                border-radius: 1rem;                
+            }   
+        }
+
+        &__info {
+            letter-spacing: u.$letterSpacing;
+            color: rgba(255, 255, 255, 0.4);
+        }
+    }
+
+    &__start-btn {
+        height: 3rem;
+        width: 70%;
+        margin: auto;
+
+        font-weight: 600;
+        letter-spacing: u.$letterSpacing;
+        
+        border-radius: .5rem;
+        background-color: u.$light-yellow;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px -3px 2px 0px inset;
+
+    }
+}
+
+

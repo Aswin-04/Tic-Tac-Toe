@@ -4,10 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="dist/css/style.css" />
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="dist/style.css" />
+    <script src="app/js/script.js" defer></script>
   </head>
   <body>
+
+    <section class="init-section">
+      <div class="game-initializer">
+        <div class="game-initializer__logo">
+          <img src="app/scss/assets/x.png" alt="" class="logo">
+          <img src="app/scss/assets/o.png" alt="" class="logo">
+        </div>
+        <div class="game-initializer__player-picker">
+          <h4 class="game-initializer__player-picker__header">PICK PLAYER 1'S SIGN</h4>
+          <div class="game-initializer__player-picker__input">
+            <div class="game-initializer__player-picker__input__x-icon checked-icon" data-icon="x">
+              <img src="app/scss/assets/black-x.png" alt="" class="x-img">
+            </div>
+            <div class="game-initializer__player-picker__input__o-icon" data-icon="o">
+              <img src="app/scss/assets/black-o.png" alt="" class="o-img">
+            </div>
+          </div>
+          <p class="game-initializer__player-picker__info">REMEMBER: X GOES FIRST</>
+        </div>
+        <button class="game-initializer__start-btn">START GAME</button>
+      </div>
+    </section>
     
   </body>
 </html>
