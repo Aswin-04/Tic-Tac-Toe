@@ -1,13 +1,13 @@
 @use '../util' as u;
 
 .logo {
-    width: clamp(1rem, 10%, 1.5rem); 
+    width: clamp(1rem, 10%, 2rem); 
     height: auto;
 }
 
 .x-img, .o-img {
 
-    width: clamp(1.5rem, 30%, 2.5rem); 
+    width: clamp(1.5rem, 30%, 3rem); 
     height: auto;
 
     
