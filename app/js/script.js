@@ -199,16 +199,31 @@
 const iconX = document.querySelector('[data-icon="x"]')
 const iconO = document.querySelector('[data-icon="o"]')
 
+const imgX = iconX.querySelector("img")
+const imgO = iconO.querySelector("img")
+
+
 function toggleChecked(e) {
+    const clickedSign = e.currentTarget
 
     iconX.classList.remove("checked-icon")
     iconO.classList.remove("checked-icon")
 
-    const checkedElement = e.currentTarget
-    checkedElement.classList.toggle("checked-icon")
+    if(clickedSign.dataset.icon === "x") {
+        clickedSign.classList.toggle("checked-icon")
+        imgX.src = "app/scss/assets/icon-x-dark.png"
+        imgO.src = "app/scss/assets/icon-o-grey.png"
+    }
+
+    else {
+        clickedSign.classList.toggle("checked-icon") 
+        imgX.src = "app/scss/assets/icon-x-grey.png"
+        imgO.src = "app/scss/assets/icon-o-dark.png"
+    }
 
     e.stopPropagation()
-} 
+
+}
 
 iconX.addEventListener('click', toggleChecked)
 iconO.addEventListener('click', toggleChecked)
