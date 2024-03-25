@@ -5,36 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="dist/style.css" />
-    <script src="app/js/script.js" defer></script>
+    <script src="app/js/script1.js" defer></script>
   </head>
   <body>
 
-    <main class="main">
-      <section class="main__upper-section">
-        <div class="main__upper-section__logo">
-          <img src="app/scss/assets/icon-x-dark-cyan.png" alt="" class="logo">
-          <img src="app/scss/assets/icon-o-yellow.png" alt="" class="logo">
-        </div>
-        <div class="main__upper-section__players-turn">
-          <img src="app/scss/assets/icon-x-grey.png" alt="" class="logo">
-          <h4>TURN</h4>
-        </div>
-        <div class="main__upper-section__reset">
-          <img src="app/scss/assets/reset.png" alt="">
-        </div>
-
-      </section>
-      <section class="main__game-board">
-
-      </section>
-      <section class="main__result-section">
-        <div class="main__result-section__x"></div>
-        <div class="main__result-section__tie"></div>
-        <div class="main__result-section__o"></div>
-      </section>
-
-    </main>
-    <section class="init-section hide-page">
+    <section class="init-section disabled">
       <div class="game-initializer">
         <div class="game-initializer__logo">
           <img src="app/scss/assets/icon-x-dark-cyan.png" alt="" class="logo">
@@ -43,11 +18,11 @@
         <div class="game-initializer__player-picker">
           <h4 class="game-initializer__player-picker__header">PICK PLAYER 1'S SIGN</h4>
           <div class="game-initializer__player-picker__input">
-            <div class="game-initializer__player-picker__input__x-icon checked-icon" data-icon="x">
-              <img src="app/scss/assets/icon-x-dark.png" alt="" class="x-img">
+            <div class="game-initializer__player-picker__input__x-icon checked-icon" data-input-sign="X" data-check-status="checked">
+              <img src="app/scss/assets/icon-x-dark.png" alt="" class="x-img" data-imgX>
             </div>
-            <div class="game-initializer__player-picker__input__o-icon" data-icon="o">
-              <img src="app/scss/assets/icon-o-grey.png" alt="" class="o-img">
+            <div class="game-initializer__player-picker__input__o-icon" data-input-sign="O" data-check-status=""">
+              <img src="app/scss/assets/icon-o-grey.png" alt="" class="o-img" data-imgO>
             </div>
           </div>
           <p class="game-initializer__player-picker__info">remember: x goes first</>
@@ -57,6 +32,45 @@
         </div>
       </div>
     </section>
+
+    <main class="main-page">
+      <section class="main-page__upper-section">
+        <div class="main-page__upper-section__logo">
+          <img src="app/scss/assets/icon-x-dark-cyan.png" alt="" class="logo">
+          <img src="app/scss/assets/icon-o-yellow.png" alt="" class="logo">
+        </div>
+        <div class="main-page__upper-section__players-turn" data-player-turn>
+          <img src="app/scss/assets/icon-x-grey.png" alt="" class="logo">
+          <h4>TURN</h4>
+        </div>
+        <div class="main-page__upper-section__reset" data-reset-btn>
+          <img src="app/scss/assets/reset.png" alt="">
+        </div>
+
+      </section>
+      <section class="main-page__game-board" data-game-board>
+
+      </section>
+      <!-- <section class="main-page__result-section">
+        <div class="main-page__result-section__x"></div>
+        <div class="main-page__result-section__tie"></div>
+        <div class="main-page__result-section__o"></div>
+      </section> -->
+
+    </main>
+
+    <dialog class="result-conveyer">
+      <p class="result-conveyer__credits">Congratulations !</p>
+      <h2 class="result-conveyer__display-winner">
+        <span class="result-conveyer__display-winner__sign" data-winner-sign></span>
+        <span class="result-conveyer__display-winner-status">Takes the Round</span>
+      </h2>
+      <section class="result-conveyer__options" data-result->
+        <div class="result-conveyer__reset-btn" data-quit-btn>Quit</div>
+        <div class="result-conveyer__continue-btn" data-next-round-btn>Next Round</div>
+      </section>
+    </dialog>
+
     
   </body>
 </html>
