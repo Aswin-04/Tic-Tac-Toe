@@ -56,6 +56,9 @@ function gameController() {
 
   playerList.push(playerX, playerO);
 
+  let gameHasWon = false
+  let gameIsTie = false
+
   const board = gameBoard.getBoard();
   const winningCombos = [
     [0, 1, 2],
@@ -76,6 +79,10 @@ function gameController() {
     activePlayer = playerX === activePlayer ? playerO : playerX;
   };
 
+  const resetGameStatus = () => {
+    gameHasWon = false
+    gameIsTie = false
+  }
 
   const checkForWin = () => {
     for (const combo of winningCombos) {
@@ -86,7 +93,8 @@ function gameController() {
         signArray.every((val) => val === "O")
       ) {
         activePlayer.hasWon = true;
-        return true
+        gameHasWon = true
+        return
       }
     }
   };
@@ -94,8 +102,8 @@ function gameController() {
   const checkForTie = () => {
     for (let cell of board) {
       if (cell.getSign() === "") return;
-      return true;
     }
+    gameIsTie = true
   };
 
   const resetBoardArray = () => {
@@ -106,9 +114,17 @@ function gameController() {
 
   const playRound = (index) => {
     if (!gameBoard.changeCellSign(index, activePlayer)) return;
-    // if (checkForWin() || checkForTie()) return;
-    if(checkForWin() === true) return "Win"
-    else if(checkForTie() === true) return "Tie"
+    checkForWin()
+    if(gameHasWon === true) {
+      resetGameStatus()
+      return activePlayer.getPlayerSign()
+    }
+
+    checkForTie()
+    if(gameIsTie === true) {
+      resetGameStatus()
+      return "Tie"
+    }
     switchPlayerTurn();
   };
 
@@ -123,41 +139,74 @@ function gameController() {
 (function screenController() {
   const game = gameController()
   const board = game.getBoard()
-
+  
+  const initPage = document.querySelector('[data-init-page]')
   const inputX = document.querySelector('[data-input-sign="X"]')
   const inputO = document.querySelector('[data-input-sign="O"]')
   const imgX = inputX.querySelector('[data-imgX]')
   const imgO = inputO.querySelector('[data-imgO]')
-  const resetBtn = document.querySelector('[data-reset-btn]')
+  const startGameBtn = document.querySelector('[data-start-btn]')
   
+  const mainPage = document.querySelector('[data-main-page]')
+  const resetBtn = document.querySelector('[data-reset-btn]')
   const gameBoard = document.querySelector('[data-game-board]')
   const playerTurn = document.querySelector('[data-player-turn]')
   const playerTurnImg = playerTurn.querySelector("img")
   
-  const winnerSign = document.querySelector('[data-winner-sign]')
   
-  const resultOptionDiv = document.querySelector('[data-result-opt]')
+  const resultDialog = document.querySelector("[data-result-dialog]")
+  const creditTag = resultDialog.querySelector("p")
+  const h2 = resultDialog.querySelector("h2")
+  const winnerSignImg = document.querySelector('[data-winner-sign-img]')
+  const h2Span = h2.querySelector("span")
   const quitBtn = document.querySelector('[data-quit-btn]')
-  const nextRoundBtn = document.querySelector('[data-next-round-btn]')
-  
-  const toggleChecked = (e) => {
-    const clickedInput = e.currentTarget
+  const playAgainBtn = document.querySelector('[data-play-again-btn]')
+
+  const toggleImage = (clickedInput) => {
     
-    if(clickedInput.dataset.input.sign === "X") {
-      inputX.dataset.check.status = "checked"
-      inputO.dataset.check.status = ""
+    if(clickedInput.dataset.inputSign === "X") {
+      imgX.src = "app/scss/assets/icon-x-dark.png"
+      imgO.src = "app/scss/assets/icon-o-grey.png"
+    }
+
+    else {
+      imgX.src = "app/scss/assets/icon-x-grey.png"
+      imgO.src = "app/scss/assets/icon-o-dark.png"
+    }
+
+  }
+  
+  const toggleChecked = (clickedInput) => {
+    
+    if(clickedInput.dataset.inputSign === "X") {
+      inputX.dataset.checkStatus = "checked"
+      inputO.dataset.checkStatus = ""
     }
     
     else {
-      inputX.dataset.check.status = ""
-      inputO.dataset.check.status = "checked" 
+      inputX.dataset.checkStatus = ""
+      inputO.dataset.checkStatus = "checked" 
     }
     
+  }
+
+  const handlePlayerPickerSign = (e) => {
+    const clickedInput = e.currentTarget
+    toggleChecked(clickedInput)
+    toggleImage(clickedInput)
     e.stopPropagation()
+
   }
   
-  inputX.addEventListener('click', toggleChecked)
-  inputO.addEventListener('click', toggleChecked)
+  inputX.addEventListener('click', handlePlayerPickerSign)
+  inputO.addEventListener('click', handlePlayerPickerSign)
+
+  const startGame = () => {
+    initPage.dataset.disabled = "true"
+    mainPage.dataset.disabled = "false"
+  }
+
+  startGameBtn.addEventListener('click', startGame)
   
   const createBoard = () => {
     board.forEach((cell) => {
@@ -212,13 +261,41 @@ function gameController() {
     updatePlayerTurnImg()
     updateGameBoard()
   }
-  // const checkStatus = () => {
+  const handleGameStatus = (gameStatus) => {
+    if(gameStatus === "Tie") {
+      resultDialog.showModal()
 
-  // }
+      creditTag.textContent = ""
+      winnerSignImg.dataset.isHidden = "true"
+      h2Span.textContent = "It's a Tie"
+
+    }
+
+    else if(gameStatus === "X") {
+      resultDialog.showModal()
+      winnerSignImg.src = "app/scss/assets/icon-x-dark-cyan.png"
+      h2Span.textContent = "Takes the Round"
+    }
+
+    else if(gameStatus === "O") {
+      resultDialog.showModal()
+      winnerSignImg.src = "app/scss/assets/icon-o-yellow.png"
+      h2Span.textContent = "Takes the Round"
+    }
+
+  }
+
+  const resetResultConveyer = () => {
+    winnerSignImg.dataset.isHidden = ""
+    creditTag.textContent = "Congratulations !"
+    winnerSignImg.src = ""
+    h2Span.textContent = ""
+  }
   const clickHandlerForBoard = (e) => {
     const selectedCell = e.target
     const index = selectedCell.dataset.cellIndex
-    // const gameStatus = game.playRound(index)
+    const getGameStatus = () => game.playRound(index)
+    handleGameStatus(getGameStatus())
     updateScreen() 
     e.stopPropagation()
   }
@@ -236,6 +313,24 @@ function gameController() {
   }
 
   resetBtn.addEventListener('click', resetGameBoard)
+
+  const handleQuit = () => {
+    mainPage.dataset.disabled = true
+    initPage.dataset.disabled = false
+    resetGameBoard()
+    resetResultConveyer()
+    resultDialog.close()
+  }
+  quitBtn.addEventListener('click', handleQuit)
+
+  const handlePlayAgain = () => {
+    resetGameBoard()
+    resetResultConveyer()
+    resultDialog.close()
+  }
+  playAgainBtn.addEventListener('click', handlePlayAgain)
+
+
 
   createBoard()
 })()

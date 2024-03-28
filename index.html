@@ -9,7 +9,7 @@
   </head>
   <body>
 
-    <section class="init-section disabled">
+    <section class="init-section" data-init-page data-disabled="false">
       <div class="game-initializer">
         <div class="game-initializer__logo">
           <img src="app/scss/assets/icon-x-dark-cyan.png" alt="" class="logo">
@@ -28,12 +28,12 @@
           <p class="game-initializer__player-picker__info">remember: x goes first</>
         </div>
         <div class="game-initializer__btn">
-          <button class="start-btn">START GAME</button>
+          <button class="start-btn" data-start-btn>START GAME</button>
         </div>
       </div>
     </section>
 
-    <main class="main-page">
+    <main class="main-page" data-main-page data-disabled="true">
       <section class="main-page__upper-section">
         <div class="main-page__upper-section__logo">
           <img src="app/scss/assets/icon-x-dark-cyan.png" alt="" class="logo">
@@ -46,28 +46,19 @@
         <div class="main-page__upper-section__reset" data-reset-btn>
           <img src="app/scss/assets/reset.png" alt="">
         </div>
-
       </section>
-      <section class="main-page__game-board" data-game-board>
-
-      </section>
-      <!-- <section class="main-page__result-section">
-        <div class="main-page__result-section__x"></div>
-        <div class="main-page__result-section__tie"></div>
-        <div class="main-page__result-section__o"></div>
-      </section> -->
-
+      <section class="main-page__game-board" data-game-board></section>
     </main>
 
-    <dialog class="result-conveyer">
+    <dialog class="result-conveyer" data-result-dialog>
       <p class="result-conveyer__credits">Congratulations !</p>
       <h2 class="result-conveyer__display-winner">
-        <span class="result-conveyer__display-winner__sign" data-winner-sign></span>
+        <img class="result-conveyer__display-winner__sign" data-winner-sign-img="" data-is-hidden=""  src="" ></img>
         <span class="result-conveyer__display-winner-status">Takes the Round</span>
       </h2>
-      <section class="result-conveyer__options" data-result->
-        <div class="result-conveyer__reset-btn" data-quit-btn>Quit</div>
-        <div class="result-conveyer__continue-btn" data-next-round-btn>Next Round</div>
+      <section class="result-conveyer__options" data-result-opt>
+        <div class="result-conveyer__quit-btn" data-quit-btn>Quit</div>
+        <div class="result-conveyer__play-again-btn" data-play-again-btn>Play Again</div>
       </section>
     </dialog>
 

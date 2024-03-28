@@ -1,3 +1,14 @@
-.disabled {
+// .disabled {
+//     display: none;
+// }
+
+[data-disabled="true"] {
+    display: none;
+}
+
+[data-is-hidden=""] {
+    display: block;
+}
+[data-is-hidden="true"] {
     display: none;
 }
