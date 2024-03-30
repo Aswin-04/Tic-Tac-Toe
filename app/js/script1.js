@@ -3,19 +3,18 @@ function createCell(index) {
   const getSign = () => sign;
   const getIndex = () => index;
 
-  const changeSign = (playerSign) => {
+  const setSign = (playerSign) => {
     sign = playerSign;
   };
 
   return {
     getSign,
     getIndex,
-    changeSign,
+    setSign,
   };
 }
 
-function createPlayer(assignedSign) {
-  let sign = assignedSign;
+function createPlayer(sign) {
   let hasWon = false;
 
   const getPlayerSign = () => sign;
@@ -36,15 +35,17 @@ function createGameBoard() {
 
   const getBoard = () => board;
 
-  const changeCellSign = (index, player) => {
-    if (board[index].getSign() != "") return false;
-    board[index].changeSign(player.getPlayerSign());
-    return true;
+  const setCellSign = (index, sign) => {
+    if (board[index].getSign() === "") {
+      board[index].setSign(sign);
+      return true;
+    }
+    return null;
   };
 
   return {
     getBoard,
-    changeCellSign,
+    setCellSign,
   };
 }
 
@@ -56,21 +57,6 @@ function gameController() {
 
   playerList.push(playerX, playerO);
 
-  let gameHasWon = false
-  let gameIsTie = false
-
-  const board = gameBoard.getBoard();
-  const winningCombos = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
   let activePlayer = playerX;
 
   const getActivePlayer = () => activePlayer;
@@ -79,260 +65,230 @@ function gameController() {
     activePlayer = playerX === activePlayer ? playerO : playerX;
   };
 
-  const resetGameStatus = () => {
-    gameHasWon = false
-    gameIsTie = false
-  }
-
   const checkForWin = () => {
-    for (const combo of winningCombos) {
-      const signArray = combo.map((index) => board[index].getSign());
+    const board = gameBoard.getBoard();
+    const winningCombos = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
 
-      if (
-        signArray.every((val) => val === "X") ||
-        signArray.every((val) => val === "O")
-      ) {
-        activePlayer.hasWon = true;
-        gameHasWon = true
-        return
-      }
+    for (const combo of winningCombos) {
+      const [a, b, c] = combo;
+      const signA = board[a].getSign();
+      const signB = board[b].getSign();
+      const signC = board[c].getSign();
+
+      if (signA && signA === signB && signA === signC) return signA;
     }
+    return null;
   };
 
   const checkForTie = () => {
-    for (let cell of board) {
-      if (cell.getSign() === "") return;
-    }
-    gameIsTie = true
+    const board = gameBoard.getBoard();
+    if (board.every((cell) => cell.getSign())) return "Tie";
   };
 
   const resetBoardArray = () => {
-    board.forEach((cell) => cell.changeSign(""));
-    activePlayer.hasWon = false;
+    const board = gameBoard.getBoard();
+    board.forEach((cell) => cell.setSign(""));
     activePlayer = playerX;
   };
 
   const playRound = (index) => {
-    if (!gameBoard.changeCellSign(index, activePlayer)) return;
-    checkForWin()
-    if(gameHasWon === true) {
-      resetGameStatus()
-      return activePlayer.getPlayerSign()
-    }
+    if (gameBoard.setCellSign(index, getActivePlayer().getPlayerSign())) {
+      const win = checkForWin();
+      if (win) return win;
 
-    checkForTie()
-    if(gameIsTie === true) {
-      resetGameStatus()
-      return "Tie"
+      const tie = checkForTie();
+      if (tie) return tie;
+
+      switchPlayerTurn();
     }
-    switchPlayerTurn();
+    return null;
   };
 
   return {
     getBoard: gameBoard.getBoard,
     getActivePlayer,
+    switchPlayerTurn,
     resetBoardArray,
     playRound,
   };
 }
 
 (function screenController() {
-  const game = gameController()
-  const board = game.getBoard()
-  
-  const initPage = document.querySelector('[data-init-page]')
-  const inputX = document.querySelector('[data-input-sign="X"]')
-  const inputO = document.querySelector('[data-input-sign="O"]')
-  const imgX = inputX.querySelector('[data-imgX]')
-  const imgO = inputO.querySelector('[data-imgO]')
-  const startGameBtn = document.querySelector('[data-start-btn]')
-  
-  const mainPage = document.querySelector('[data-main-page]')
-  const resetBtn = document.querySelector('[data-reset-btn]')
-  const gameBoard = document.querySelector('[data-game-board]')
-  const playerTurn = document.querySelector('[data-player-turn]')
-  const playerTurnImg = playerTurn.querySelector("img")
-  
-  
-  const resultDialog = document.querySelector("[data-result-dialog]")
-  const creditTag = resultDialog.querySelector("p")
-  const h2 = resultDialog.querySelector("h2")
-  const winnerSignImg = document.querySelector('[data-winner-sign-img]')
-  const h2Span = h2.querySelector("span")
-  const quitBtn = document.querySelector('[data-quit-btn]')
-  const playAgainBtn = document.querySelector('[data-play-again-btn]')
+  const game = gameController();
+  const board = game.getBoard();
+
+  const initPage = document.querySelector("[data-init-page]");
+  const playerSignInputs = document.querySelectorAll("[data-input-sign]");
+  const inputX = document.querySelector('[data-input-sign="X"]');
+  const inputO = document.querySelector('[data-input-sign="O"]');
+  const imgX = inputX.querySelector("[data-imgX]");
+  const imgO = inputO.querySelector("[data-imgO]");
+  const startBtn = document.querySelector("[data-start-btn]");
+
+  const mainPage = document.querySelector("[data-main-page]");
+  const playerTurn = document.querySelector("[data-player-turn]");
+  const playerTurnImg = playerTurn.querySelector("img");
+  const gameBoardContainer = document.querySelector("[data-game-board]");
+  const resetBtn = document.querySelector("[data-reset-btn]");
+
+  const resultDialog = document.querySelector("[data-result-dialog]");
+  const resultCredit = document.querySelector("[data-credit-tag]");
+  const winnerSignImg = document.querySelector("[data-winner-sign-img]");
+  const resultStatusSpan = document.querySelector("span");
+  const quitBtn = document.querySelector("[data-quit-btn]");
+  const playAgainBtn = document.querySelector("[data-play-again-btn]");
 
   const toggleImage = (clickedInput) => {
-    
-    if(clickedInput.dataset.inputSign === "X") {
-      imgX.src = "app/scss/assets/icon-x-dark.png"
-      imgO.src = "app/scss/assets/icon-o-grey.png"
+    if (clickedInput.dataset.inputSign === "X") {
+      imgX.src = "app/scss/assets/icon-x-dark.png";
+      imgO.src = "app/scss/assets/icon-o-grey.png";
+    } else {
+      imgX.src = "app/scss/assets/icon-x-grey.png";
+      imgO.src = "app/scss/assets/icon-o-dark.png";
     }
+  };
 
-    else {
-      imgX.src = "app/scss/assets/icon-x-grey.png"
-      imgO.src = "app/scss/assets/icon-o-dark.png"
-    }
-
-  }
-  
   const toggleChecked = (clickedInput) => {
-    
-    if(clickedInput.dataset.inputSign === "X") {
-      inputX.dataset.checkStatus = "checked"
-      inputO.dataset.checkStatus = ""
+    if (clickedInput.dataset.inputSign === "X") {
+      inputX.dataset.checkStatus = "checked";
+      inputO.dataset.checkStatus = "";
+    } else {
+      inputX.dataset.checkStatus = "";
+      inputO.dataset.checkStatus = "checked";
     }
-    
-    else {
-      inputX.dataset.checkStatus = ""
-      inputO.dataset.checkStatus = "checked" 
-    }
-    
-  }
+  };
 
-  const handlePlayerPickerSign = (e) => {
-    const clickedInput = e.currentTarget
-    toggleChecked(clickedInput)
-    toggleImage(clickedInput)
-    e.stopPropagation()
-
-  }
-  
-  inputX.addEventListener('click', handlePlayerPickerSign)
-  inputO.addEventListener('click', handlePlayerPickerSign)
+  const togglePlayerIcon = (e) => {
+    const clickedSign = e.currentTarget;
+    toggleChecked(clickedSign);
+    toggleImage(clickedSign);
+    e.stopPropagation();
+  };
 
   const startGame = () => {
-    initPage.dataset.disabled = "true"
-    mainPage.dataset.disabled = "false"
-  }
+    initPage.dataset.disabled = "true";
+    mainPage.dataset.disabled = "false";
+  };
 
-  startGameBtn.addEventListener('click', startGame)
-  
   const createBoard = () => {
     board.forEach((cell) => {
-      const squareCell = document.createElement("button")
-      const index = cell.getIndex()
-      squareCell.classList.add("main-page__game-board__cell")
-      squareCell.dataset.cellIndex = index
-      
-      const cellImg = document.createElement("img")
-      cellImg.src = ""
-      
-      squareCell.addEventListener('click', clickHandlerForBoard)
-      
-      squareCell.appendChild(cellImg)
-      gameBoard.appendChild(squareCell)
-    })
-    
-  }
-  
+      const squareCell = document.createElement("button");
+      const index = cell.getIndex();
+      squareCell.classList.add("main-page__game-board__cell");
+      squareCell.dataset.cellIndex = index;
+
+      const cellImg = document.createElement("img");
+      cellImg.src = "";
+
+      squareCell.addEventListener("click", handleCellClick);
+
+      squareCell.appendChild(cellImg);
+      gameBoardContainer.appendChild(squareCell);
+    });
+  };
+
   const updatePlayerTurnImg = () => {
-    const activePlayer = game.getActivePlayer()
-    if(activePlayer.getPlayerSign() === "X") {
-      playerTurnImg.src = "app/scss/assets/icon-x-grey.png"
-    }
-    else {
-      playerTurnImg.src = "app/scss/assets/icon-o-grey.png"
-    }
-  }
-  
+    const activePlayer = game.getActivePlayer();
+    const sign = activePlayer.getPlayerSign();
+    playerTurnImg.src = `app/scss/assets/icon-${sign.toLowerCase()}-grey.png`;
+  };
+
   const updateGameBoard = () => {
-    const squareCells = gameBoard.querySelectorAll('[data-cell-index]')
-    squareCells.forEach((squareCell) => {
-      const cellIndex = squareCell.dataset.cellIndex
-      const cellImg = squareCell.querySelector('img')
-      const sign = board[cellIndex].getSign()
-      
-      if(sign === "X") {
-        cellImg.src = "app/scss/assets/icon-x-dark-cyan.png"
+    board.forEach((cell, index) => {
+      const cellElement = document.querySelector(
+        `[data-cell-index='${index}']`
+      );
+      const cellImg = cellElement.querySelector("img");
+      const sign = cell.getSign();
+
+      if (sign === "X") {
+        cellImg.src = "app/scss/assets/icon-x-dark-cyan.png";
+      } else if (sign === "O") {
+        cellImg.src = "app/scss/assets/icon-o-yellow.png";
+      } else {
+        cellImg.src = "";
       }
-      
-      else if(sign === "O") {
-        cellImg.src = "app/scss/assets/icon-o-yellow.png"
+    });
+  };
+
+  const handleGameOutcome = (roundOutcome) => {
+    if (roundOutcome === "Tie") {
+      showDialog("It's a Tie");
+      return roundOutcome;
+    } else if (roundOutcome) {
+      showDialog(`${roundOutcome} won the game!`);
+      return roundOutcome;
+    }
+    return null;
+  };
+
+  const showDialog = (message) => {
+    resultDialog.showModal();
+    resultStatusSpan.textContent = message;
+
+    if (message != "It's a Tie") {
+      const winnerSign = game.getActivePlayer().getPlayerSign();
+
+      if (winnerSign === "X") {
+        winnerSignImg.src = `app/scss/assets/icon-${winnerSign.toLowerCase()}-dark-cyan.png`;
+      } else {
+        winnerSignImg.src = `app/scss/assets/icon-${winnerSign.toLowerCase()}-yellow.png`;
       }
-
-      else {
-        cellImg.src = ""
-      }
-    })
-  }
-  
-  const updateScreen = () => {
-    updatePlayerTurnImg()
-    updateGameBoard()
-  }
-  const handleGameStatus = (gameStatus) => {
-    if(gameStatus === "Tie") {
-      resultDialog.showModal()
-
-      creditTag.textContent = ""
-      winnerSignImg.dataset.isHidden = "true"
-      h2Span.textContent = "It's a Tie"
-
+    } else {
+      resultCredit.dataset.isHidden = true;
+      winnerSignImg.dataset.isHidden = true;
     }
+  };
 
-    else if(gameStatus === "X") {
-      resultDialog.showModal()
-      winnerSignImg.src = "app/scss/assets/icon-x-dark-cyan.png"
-      h2Span.textContent = "Takes the Round"
-    }
+  const resetResultDialog = () => {
+    resultCredit.dataset.isHidden = "";
+    winnerSignImg.dataset.isHidden = "";
+  };
 
-    else if(gameStatus === "O") {
-      resultDialog.showModal()
-      winnerSignImg.src = "app/scss/assets/icon-o-yellow.png"
-      h2Span.textContent = "Takes the Round"
-    }
-
-  }
-
-  const resetResultConveyer = () => {
-    winnerSignImg.dataset.isHidden = ""
-    creditTag.textContent = "Congratulations !"
-    winnerSignImg.src = ""
-    h2Span.textContent = ""
-  }
-  const clickHandlerForBoard = (e) => {
-    const selectedCell = e.target
-    const index = selectedCell.dataset.cellIndex
-    const getGameStatus = () => game.playRound(index)
-    handleGameStatus(getGameStatus())
-    updateScreen() 
-    e.stopPropagation()
-  }
-  
-  const resetGameBoard = () => {
-    const squareCells = gameBoard.querySelectorAll('[data-cell-index]')
-    game.resetBoardArray()
-  
-    squareCells.forEach((cell) => {
-      const cellImg = cell.querySelector("img")
-      cellImg.src = ""
-    })
-  
-    updateScreen()
-  }
-
-  resetBtn.addEventListener('click', resetGameBoard)
+  const resetGame = () => {
+    game.resetBoardArray();
+    updateGameBoard();
+    resetResultDialog();
+    resultDialog.close();
+  };
 
   const handleQuit = () => {
-    mainPage.dataset.disabled = true
-    initPage.dataset.disabled = false
-    resetGameBoard()
-    resetResultConveyer()
-    resultDialog.close()
-  }
-  quitBtn.addEventListener('click', handleQuit)
+    mainPage.dataset.disabled = true;
+    initPage.dataset.disabled = false;
+    resetGame();
+  };
 
   const handlePlayAgain = () => {
-    resetGameBoard()
-    resetResultConveyer()
-    resultDialog.close()
-  }
-  playAgainBtn.addEventListener('click', handlePlayAgain)
+    resetGame();
+  };
 
+  const handleCellClick = (e) => {
+    const index = e.currentTarget.dataset.cellIndex;
+    const roundOutcome = game.playRound(index);
+    handleGameOutcome(roundOutcome);
+    updatePlayerTurnImg();
+    updateGameBoard();
+  };
 
+  const initializeGame = () => {
+    createBoard();
+    playerSignInputs.forEach((input) =>
+      input.addEventListener("click", togglePlayerIcon)
+    );
+    startBtn.addEventListener("click", startGame);
+    resetBtn.addEventListener("click", resetGame);
+    quitBtn.addEventListener("click", handleQuit);
+    playAgainBtn.addEventListener("click", handlePlayAgain);
+  };
 
-  createBoard()
-})()
-
-
+  initializeGame();
+})();
