@@ -1,281 +1,294 @@
 function createCell(index) {
+  let sign = "";
+  const getSign = () => sign;
+  const getIndex = () => index;
 
-    let value = ""
+  const setSign = (playerSign) => {
+    sign = playerSign;
+  };
 
-    const getValue = () => value
-    const getIndex = () => index
-
-    const changeValue = (givenValue) => {
-        value = givenValue
-    }
-
-    return {
-        changeValue, 
-        getValue,
-        getIndex,
-    }
+  return {
+    getSign,
+    getIndex,
+    setSign,
+  };
 }
 
-function createPlayer(value) {
+function createPlayer(sign) {
+  let hasWon = false;
 
-    let hasWon = false
-    let isTie = false
-    
-    const getAssignedValue = () => value
+  const getPlayerSign = () => sign;
 
-    return {
-        getAssignedValue,
-        hasWon,
-        isTie,
-    }
+  return {
+    getPlayerSign,
+    hasWon,
+  };
 }
 
-function gameBoard() {
+function createGameBoard() {
+  const totalCells = 9;
+  const board = [];
 
-    const ROW = 3
-    const COLUMN = 3
-    const board = []
+  for (let index = 0; index < totalCells; index++) {
+    board.push(createCell(index));
+  }
 
-    for(let i = 0; i < ROW*COLUMN; i++) {
-        board.push(createCell(i))
-    }
-    
-    const getBoard = () => board
+  const getBoard = () => board;
 
-    const setValue = (index, player) => {
-        if(board[index].getValue() != "") {
-            return false
-        }
-        board[index].changeValue(player.getAssignedValue())
-        return true
+  const setCellSign = (index, sign) => {
+    if (board[index].getSign() === "") {
+      board[index].setSign(sign);
+      return true;
     }
-    
-    return {
-        getBoard,
-        setValue,
-    }
+    return null;
+  };
+
+  return {
+    getBoard,
+    setCellSign,
+  };
 }
 
 function gameController() {
-    
-    const game = gameBoard()
-    const playerArray = []
-    const playerX = createPlayer("X")
-    const playerO = createPlayer("O")
+  const gameBoard = createGameBoard();
+  const playerList = [];
+  const playerX = createPlayer("X");
+  const playerO = createPlayer("O");
 
-    playerArray.push(playerX, playerO)
+  playerList.push(playerX, playerO);
 
-    const board = game.getBoard()
+  let activePlayer = playerX;
+
+  const getActivePlayer = () => activePlayer;
+
+  const switchPlayerTurn = () => {
+    activePlayer = playerX === activePlayer ? playerO : playerX;
+  };
+
+  const checkForWin = () => {
+    const board = gameBoard.getBoard();
     const winningCombos = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ]
-    
-    let activePlayer = playerX
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
 
-    const getActivePlayer = () => activePlayer
+    for (const combo of winningCombos) {
+      const [a, b, c] = combo;
+      const signA = board[a].getSign();
+      const signB = board[b].getSign();
+      const signC = board[c].getSign();
 
-    const switchPlayerTurn = () => {
-        activePlayer = playerX === activePlayer ? playerO : playerX
+      if (signA && signA === signB && signA === signC) return signA;
     }
+    return null;
+  };
 
-    const checkForWin = () => {
+  const checkForTie = () => {
+    const board = gameBoard.getBoard();
+    if (board.every((cell) => cell.getSign())) return "Tie";
+  };
 
-        for(const combo of winningCombos) {
-            const checkArray = combo.map((index) => board[index].getValue())
-            
-            if(checkArray.every(val => val === "X") || checkArray.every(val => val === "O")) {
-                activePlayer.hasWon = true
-                return true
-            }
-        }
-        return false
+  const resetBoardArray = () => {
+    const board = gameBoard.getBoard();
+    board.forEach((cell) => cell.setSign(""));
+    activePlayer = playerX;
+  };
+
+  const playRound = (index) => {
+    if (gameBoard.setCellSign(index, getActivePlayer().getPlayerSign())) {
+      const win = checkForWin();
+      if (win) return win;
+
+      const tie = checkForTie();
+      if (tie) return tie;
+
+      switchPlayerTurn();
     }
+    return null;
+  };
 
-    const checkForTie = () => {
-        for(let cell of board) {
-            if(cell.getValue() === "") return false
-        }
-        activePlayer.isTie = true
-        return true
-    }
-
-    const resetBoard = () => {
-        board.forEach((cell) => cell.changeValue(""))
-        activePlayer.hasWon = false
-        activePlayer.isTie = false
-        activePlayer = playerX
-    }
-    const playRound = (index) => {
-
-        if(!game.setValue(index, activePlayer)) return
-        if(checkForWin() || checkForTie()) return
-        switchPlayerTurn()
-    }
-
-    return {
-        playRound,
-        getActivePlayer,
-        getBoard : game.getBoard,
-        resetBoard,
-    }
+  return {
+    getBoard: gameBoard.getBoard,
+    getActivePlayer,
+    switchPlayerTurn,
+    resetBoardArray,
+    playRound,
+  };
 }
 
-const screenController = (() =>  {
-    const game = gameController()
-    const board = game.getBoard()
+(function screenController() {
+  const game = gameController();
+  const board = game.getBoard();
 
-    const boardDiv = document.querySelector('[data-game-board]')
-    const playerTurnDiv = document.querySelector('data-player-turn')
+  const initPage = document.querySelector("[data-init-page]");
+  const playerSignInputs = document.querySelectorAll("[data-input-sign]");
+  const inputX = document.querySelector('[data-input-sign="X"]');
+  const inputO = document.querySelector('[data-input-sign="O"]');
+  const imgX = inputX.querySelector("[data-imgX]");
+  const imgO = inputO.querySelector("[data-imgO]");
+  const startBtn = document.querySelector("[data-start-btn]");
 
-    const createBoard = () => {
+  const mainPage = document.querySelector("[data-main-page]");
+  const playerTurn = document.querySelector("[data-player-turn]");
+  const playerTurnImg = playerTurn.querySelector("img");
+  const gameBoardContainer = document.querySelector("[data-game-board]");
+  const resetBtn = document.querySelector("[data-reset-btn]");
 
-        board.forEach((cell) => {
-            const box = document.createElement("div")
-            const img = document.createElement("img")
-            box.classList.add("main-page__game-board__cell")
-            box.classList.add("cell")
-            box.dataset.cell = cell.getIndex() 
-            box.appendChild(img)
-            boardDiv.appendChild(box)
-        })
+  const resultDialog = document.querySelector("[data-result-dialog]");
+  const resultCredit = document.querySelector("[data-credit-tag]");
+  const winnerSignImg = document.querySelector("[data-winner-sign-img]");
+  const resultStatusSpan = document.querySelector("span");
+  const quitBtn = document.querySelector("[data-quit-btn]");
+  const playAgainBtn = document.querySelector("[data-play-again-btn]");
+
+  const toggleImage = (clickedInput) => {
+    if (clickedInput.dataset.inputSign === "X") {
+      imgX.src = "app/scss/assets/icon-x-dark.png";
+      imgO.src = "app/scss/assets/icon-o-grey.png";
+    } else {
+      imgX.src = "app/scss/assets/icon-x-grey.png";
+      imgO.src = "app/scss/assets/icon-o-dark.png";
     }
+  };
 
-    const resetGameBoard = () => {
-        boardDiv.forEach((cell) => {
-            cell.querySelector('img').remove()
-        })
+  const toggleChecked = (clickedInput) => {
+    if (clickedInput.dataset.inputSign === "X") {
+      inputX.dataset.checkStatus = "checked";
+      inputO.dataset.checkStatus = "";
+    } else {
+      inputX.dataset.checkStatus = "";
+      inputO.dataset.checkStatus = "checked";
     }
+  };
 
+  const togglePlayerIcon = (e) => {
+    const clickedSign = e.currentTarget;
+    toggleChecked(clickedSign);
+    toggleImage(clickedSign);
+    e.stopPropagation();
+  };
 
-    const updateScreen = () => {
+  const startGame = () => {
+    initPage.dataset.disabled = "true";
+    mainPage.dataset.disabled = "false";
+  };
 
+  const createBoard = () => {
+    board.forEach((cell) => {
+      const squareCell = document.createElement("button");
+      const index = cell.getIndex();
+      squareCell.classList.add("main-page__game-board__cell");
+      squareCell.dataset.cellIndex = index;
 
+      const cellImg = document.createElement("img");
+      cellImg.src = "";
+
+      squareCell.addEventListener("click", handleCellClick);
+
+      squareCell.appendChild(cellImg);
+      gameBoardContainer.appendChild(squareCell);
+    });
+  };
+
+  const updatePlayerTurnImg = () => {
+    const activePlayer = game.getActivePlayer();
+    const sign = activePlayer.getPlayerSign();
+    playerTurnImg.src = `app/scss/assets/icon-${sign.toLowerCase()}-grey.png`;
+  };
+
+  const updateGameBoard = () => {
+    board.forEach((cell, index) => {
+      const cellElement = document.querySelector(
+        `[data-cell-index='${index}']`
+      );
+      const cellImg = cellElement.querySelector("img");
+      const sign = cell.getSign();
+
+      if (sign === "X") {
+        cellImg.src = "app/scss/assets/icon-x-dark-cyan.png";
+      } else if (sign === "O") {
+        cellImg.src = "app/scss/assets/icon-o-yellow.png";
+      } else {
+        cellImg.src = "";
+      }
+    });
+  };
+
+  const handleGameOutcome = (roundOutcome) => {
+    if (roundOutcome === "Tie") {
+      showDialog("It's a Tie");
+      return roundOutcome;
+    } else if (roundOutcome) {
+      showDialog(`${roundOutcome} won the game!`);
+      return roundOutcome;
     }
+    return null;
+  };
 
+  const showDialog = (message) => {
+    resultDialog.showModal();
+    resultStatusSpan.textContent = message;
 
-    const clickHandlerForBoard = (e) => {
-        const clickedCell = e.target
-        const activePlayer = game.getActivePlayer()
-        const index = clickedCell.dataset.cell
-        const value = activePlayer.getAssignedValue()
-        const img = clickedCell.querySelector("img")
+    if (message != "It's a Tie") {
+      const winnerSign = game.getActivePlayer().getPlayerSign();
 
-        board[index].changeValue(value)
-
-        if(value == "X") {
-            img.src = "app/scss/assets/icon-x-dark-cyan.png"
-        }
-
-        else {
-            img.src = "app/scss/assets/icon-o-yellow.png"
-        }
-        
+      if (winnerSign === "X") {
+        winnerSignImg.src = `app/scss/assets/icon-${winnerSign.toLowerCase()}-dark-cyan.png`;
+      } else {
+        winnerSignImg.src = `app/scss/assets/icon-${winnerSign.toLowerCase()}-yellow.png`;
+      }
+    } else {
+      resultCredit.dataset.isHidden = true;
+      winnerSignImg.dataset.isHidden = true;
     }
+  };
 
-    boardDiv.addEventListener("click", clickHandlerForBoard)
+  const resetResultDialog = () => {
+    resultCredit.dataset.isHidden = "";
+    winnerSignImg.dataset.isHidden = "";
+  };
 
-    createBoard()
-    
-    // const boardDiv = document.querySelector(".board")
-    // const playerTurnDiv = document.querySelector(".turn")
-    // const result = document.querySelector(".result")
-    // const playAgainBtn = document.querySelector(".reset")
-    
-    // const updateScreen = () => {
-        
-    //     boardDiv.textContent = ""
-    //     result.textContent = ""
-        
-    //     board.forEach((cell) => {
-    //         const buttonCell = document.createElement("button")
-            
-    //         buttonCell.textContent = cell.getValue()
-    //         buttonCell.classList.add("cell")
-    //         buttonCell.dataset.index = cell.getIndex()
-            
-    //         boardDiv.appendChild(buttonCell)
-    //     })
-        
-    //     const activePlayer = game.getActivePlayer()
-    //     playerTurnDiv.textContent = `${activePlayer.getName()}'s turn...`
-    //     if(activePlayer.hasWon) {
-    //         result.textContent = `${activePlayer.getName()} has won the game`
-    //     }
+  const resetGame = () => {
+    game.resetBoardArray();
+    updateGameBoard();
+    resetResultDialog();
+    resultDialog.close();
+  };
 
-    //     else if(activePlayer.isTie) {
-    //         result.textContent = "Oops It's a Tie....."
-    //     }
-    // }
+  const handleQuit = () => {
+    mainPage.dataset.disabled = true;
+    initPage.dataset.disabled = false;
+    resetGame();
+  };
 
-    // const clickHandlerForBoard = (e) => {
+  const handlePlayAgain = () => {
+    resetGame();
+  };
 
-    //     const selectedButton = e.target
-    //     const index = parseInt(selectedButton.dataset.index)
-    //     selectedButton.textContent = `${board[index].getValue()}`
-    //     game.playRound(index)
-    //     updateScreen()
-    // }
+  const handleCellClick = (e) => {
+    const index = e.currentTarget.dataset.cellIndex;
+    const roundOutcome = game.playRound(index);
+    handleGameOutcome(roundOutcome);
+    updatePlayerTurnImg();
+    updateGameBoard();
+  };
 
-    // boardDiv.addEventListener("click", clickHandlerForBoard)
-    // updateScreen()
+  const initializeGame = () => {
+    createBoard();
+    playerSignInputs.forEach((input) =>
+      input.addEventListener("click", togglePlayerIcon)
+    );
+    startBtn.addEventListener("click", startGame);
+    resetBtn.addEventListener("click", resetGame);
+    quitBtn.addEventListener("click", handleQuit);
+    playAgainBtn.addEventListener("click", handlePlayAgain);
+  };
 
-    // playAgainBtn.addEventListener("click", () => {
-    //     game.reset()
-    //     updateScreen()
-    // })
-
-
-
-    // const updateScreen = () => {
-
-        
-    // }
-
-    // updateScreen()
-})()
-
-
-
-// UI  
- 
-
-const iconX = document.querySelector('[data-icon="x"]')
-const iconO = document.querySelector('[data-icon="o"]')
-
-const imgX = iconX.querySelector("img")
-const imgO = iconO.querySelector("img")
-
-
-function toggleChecked(e) {
-    const clickedSign = e.currentTarget
-
-    iconX.classList.remove("checked-icon")
-    iconO.classList.remove("checked-icon")
-
-    if(clickedSign.dataset.icon === "x") {
-        clickedSign.classList.toggle("checked-icon")
-        imgX.src = "app/scss/assets/icon-x-dark.png"
-        imgO.src = "app/scss/assets/icon-o-grey.png"
-    }
-
-    else {
-        clickedSign.classList.toggle("checked-icon") 
-        imgX.src = "app/scss/assets/icon-x-grey.png"
-        imgO.src = "app/scss/assets/icon-o-dark.png"
-    }
-
-    e.stopPropagation()
-
-}
-
-iconX.addEventListener('click', toggleChecked)
-iconO.addEventListener('click', toggleChecked)
-
-
+  initializeGame();
+})();
