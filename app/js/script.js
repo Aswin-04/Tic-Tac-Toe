@@ -15,13 +15,10 @@ function createCell(index) {
 }
 
 function createPlayer(sign) {
-  let hasWon = false;
-
   const getPlayerSign = () => sign;
 
   return {
     getPlayerSign,
-    hasWon,
   };
 }
 
