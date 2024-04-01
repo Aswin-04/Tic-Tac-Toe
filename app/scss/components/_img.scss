@@ -1,19 +1,27 @@
 @use '../util' as u;
 
 .logo {
-    width: clamp(1rem, 10%, 2rem); 
+    width: clamp(1.5rem, 10%, 2rem); 
     height: auto;
 }
 
 .x-img, .o-img {
-
     width: clamp(1.5rem, 30%, 3rem); 
     height: auto;
-
-    
 }
 
 [data-check-status="checked"] {
     background-color: u.$grey;
 
 }
+
+.main-page-logo {
+    width: 30px;
+    height: 30px;
+}
+
+.reset-btn-img {
+    width: 30px;
+    height: 30px;
+}
+

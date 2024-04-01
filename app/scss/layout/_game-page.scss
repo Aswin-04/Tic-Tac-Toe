@@ -1,32 +1,95 @@
+@use '../util' as u;
+
 .main-page {
+
     height: 100vh;
     display: grid;
-    grid-template-rows: 20% 1fr;
+    grid-template-rows: 10% 1fr;
 
     &__upper-section {
-        border: 2px solid red;
         display: flex;
-        // justify-content: ;
+        justify-content: space-around;
+        align-items: center;
 
         &__logo {
             display: flex;
-            justify-content: center;
             align-items: center;
             gap: .3rem;
+
         }
 
         &__players-turn {
-            display: grid;
-            place-items: center;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: .5rem;
+
+            padding: .5em 2em;
+
+            background-color: u.$secondary;
+            border-radius: .6rem;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, .3);
+
+            img {
+                height: 1.3rem;
+                width: 1.3rem;
+            }
+
+            h4 {
+                font-size: 1.1rem;
+                letter-spacing: u.$letterSpacing;
+            }
         }
 
         &__reset-btn {
-            
+
+            width: 3rem;
+            height: 3rem;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-color: u.$grey;
+            border-radius: .6rem;
+
         }
     }
 
+    .game-board-wrapper {
+        display: grid;
+        place-items: center;
+    }
+
     &__game-board {
-        border: 2px solid blue;
+        min-height: 19.375rem;
+        width: 19.375rem;
+
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 1.5rem;
+
+        place-content: center;
+
+
+        &__cell {
+            background-color: u.$secondary;
+            border-radius: 5px;
+            padding: 0;
+            outline: 2px solid rgba(215, 214, 214, 0.2);
+            box-shadow: 0 10px 10px rgba(0, 0, 0, .5);
+
+            display: grid;
+            place-items: center;
+
+            img {
+                width: 50%;
+                height: 50%;
+                outline: none !important;
+                color: none;
+            }
+        }
+
     }
 }

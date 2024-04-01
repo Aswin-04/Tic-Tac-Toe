@@ -36,18 +36,21 @@
     <main class="main-page" data-main-page data-disabled="true">
       <section class="main-page__upper-section">
         <div class="main-page__upper-section__logo">
-          <img src="app/scss/assets/icon-x-dark-cyan.png" alt="" class="logo">
-          <img src="app/scss/assets/icon-o-yellow.png" alt="" class="logo">
+          <img src="app/scss/assets/icon-x-dark-cyan.png" alt="" class="main-page-logo">
+          <img src="app/scss/assets/icon-o-yellow.png" alt="" class="main-page-logo">
         </div>
         <div class="main-page__upper-section__players-turn" data-player-turn>
-          <img src="app/scss/assets/icon-x-grey.png" alt="" class="logo">
+          <img src="app/scss/assets/icon-x-grey.png" alt="">
           <h4>TURN</h4>
         </div>
         <div class="main-page__upper-section__reset-btn" data-reset-btn>
-          <img src="app/scss/assets/reset.png" alt="">
+          <img src="app/scss/assets/icon-restart.svg" alt="" class="reset-btn-img">
         </div>
       </section>
-      <section class="main-page__game-board" data-game-board></section>
+      <div class="game-board-wrapper">
+        <section class="main-page__game-board" data-game-board></section>
+
+      </div>
     </main>
 
     <dialog class="result-conveyer" data-result-dialog>
