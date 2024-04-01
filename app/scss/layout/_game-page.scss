@@ -11,6 +11,12 @@
         justify-content: space-around;
         align-items: center;
 
+        margin-top: 2rem;
+
+        @media (min-width: 37.5em) {
+            justify-content: space-evenly;
+        }
+
         &__logo {
             display: flex;
             align-items: center;
@@ -38,6 +44,14 @@
             h4 {
                 font-size: 1.1rem;
                 letter-spacing: u.$letterSpacing;
+            }
+
+            @media (min-width: 37.5em) {
+                padding: .8em 3.2em;
+
+                h4 {
+                    font-size: 1.2rem;
+                }
             }
         }
 
@@ -74,22 +88,24 @@
 
 
         &__cell {
-            background-color: u.$secondary;
-            border-radius: 5px;
-            padding: 0;
-            outline: 2px solid rgba(215, 214, 214, 0.2);
-            box-shadow: 0 10px 10px rgba(0, 0, 0, .5);
-
             display: grid;
             place-items: center;
 
+            background-color: u.$secondary;
+            border-radius: 5px;
+            outline: 2px solid rgba(215, 214, 214, 0.2);
+            box-shadow: 0 10px 10px rgba(0, 0, 0, .5);
+            padding: 1em 1em;
+
             img {
-                width: 50%;
-                height: 50%;
-                outline: none !important;
-                color: none;
+                filter: brightness(1.3);
             }
         }
 
+        @media (min-width: 37.5em) {
+            min-height: 25rem;
+            width: 25rem;
+            gap: 1.7rem;
+        }
     }
 }

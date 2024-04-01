@@ -200,8 +200,8 @@ function gameController() {
   };
 
   const resetPlayerTurnImg = () => {
-    playerTurnImg.src = 'app/scss/assets/icon-x-grey.png'
-  }
+    playerTurnImg.src = "app/scss/assets/icon-x-grey.png";
+  };
 
   const updateGameBoard = () => {
     board.forEach((cell, index) => {
@@ -257,7 +257,7 @@ function gameController() {
 
   const resetGame = () => {
     game.resetBoardArray();
-    resetPlayerTurnImg()
+    resetPlayerTurnImg();
     updateGameBoard();
     resetResultDialog();
     resultDialog.close();
