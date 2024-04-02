@@ -223,10 +223,10 @@ function gameController() {
 
   const handleGameOutcome = (roundOutcome) => {
     if (roundOutcome === "Tie") {
-      showDialog("It's a Tie");
+      showDialog("IT'S A TIE !");
       return roundOutcome;
     } else if (roundOutcome) {
-      showDialog(`${roundOutcome} won the game!`);
+      showDialog("WON THE GAME");
       return roundOutcome;
     }
     return null;
@@ -236,7 +236,7 @@ function gameController() {
     resultDialog.showModal();
     resultStatusSpan.textContent = message;
 
-    if (message != "It's a Tie") {
+    if (message != "IT'S A TIE !") {
       const winnerSign = game.getActivePlayer().getPlayerSign();
 
       if (winnerSign === "X") {

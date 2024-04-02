@@ -8,7 +8,6 @@
     <script src="app/js/script.js" defer></script>
   </head>
   <body>
-
     <section class="init-section" data-init-page data-disabled="false">
       <div class="game-initializer">
         <div class="game-initializer__logo">
@@ -49,22 +48,22 @@
       </section>
       <div class="game-board-wrapper">
         <section class="main-page__game-board" data-game-board></section>
-
       </div>
     </main>
 
-    <dialog class="result-conveyer" data-result-dialog>
-      <p class="result-conveyer__credits" data-credit-tag data-is-hidden="">Congratulations !</p>
-      <h2 class="result-conveyer__display-winner">
-        <img class="result-conveyer__display-winner__sign" data-winner-sign-img="" data-is-hidden=""  src="" ></img>
-        <span class="result-conveyer__display-winner-status">Takes the Round</span>
-      </h2>
-      <section class="result-conveyer__options" data-result-opt>
-        <div class="result-conveyer__quit-btn" data-quit-btn>Quit</div>
-        <div class="result-conveyer__play-again-btn" data-play-again-btn>Play Again</div>
-      </section>
+    <dialog data-result-dialog>
+      <div class="result-conveyer">
+        <p class="result-conveyer__credits" data-credit-tag data-is-hidden="">CONGRATULATIONS !</p>
+        <h2 class="result-conveyer__display-winner">
+          <img class="result-conveyer__display-winner__img" data-winner-sign-img="" data-is-hidden=""  src="" ></img>
+          <span class="result-conveyer__display-winner__span"></span>
+        </h2>
+        <section class="result-conveyer__options" data-result-opt>
+          <div class="result-conveyer__quit-btn quit-btn" data-quit-btn>QUIT</div>
+          <div class="result-conveyer__play-again-btn play-again-btn" data-play-again-btn>PLAY AGAIN</div>
+        </section>
+      </div>
     </dialog>
 
-    
   </body>
 </html>

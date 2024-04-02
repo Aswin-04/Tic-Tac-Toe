@@ -1,0 +1,56 @@
+@use '../util/' as u;
+
+dialog {
+    min-width: 100%;
+    min-height: 100%;
+    padding: 0;
+
+    background-color: rgba(0, 0, 0, 0.7);
+    border: none;
+}
+
+.result-conveyer {
+
+    min-height: 12.5rem;
+    margin-top: 6.25rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+
+    background-color: u.$secondary;
+
+    &__credits {
+
+        color: u.$grey;
+        letter-spacing: u.$letterSpacing;
+    }
+
+    &__display-winner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: .8rem;
+        
+        &__img {
+            width: 2rem;
+            height: auto;
+        }
+
+        &__span {
+            color: u.$dark-cyan;
+            letter-spacing: u.$letterSpacing;
+        }
+    }
+
+    &__options {
+        display: flex;
+        gap: 1rem;
+
+    }
+
+    @media (min-width: 37.5em) {
+        font-size: 1.1rem;
+    }
+}

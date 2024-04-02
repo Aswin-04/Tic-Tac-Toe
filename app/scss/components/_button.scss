@@ -17,5 +17,23 @@
     @media (min-width: 37.5em) {
         width: 17.5rem;
     }
+}
 
+.quit-btn,
+.play-again-btn {
+
+    padding: .5em 3em;
+    font-weight: 700;
+    letter-spacing: u.$letterSpacing;
+    text-wrap: nowrap;
+    border-radius: .6rem;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px -3px 2px 0px inset;
+}
+
+.quit-btn {
+    background-color: u.$grey;
+}
+
+.play-again-btn {
+    background-color: u.$light-yellow;
 }
